@@ -1,0 +1,90 @@
+install.packages("haven", dependencies = T)
+install.packages("psych", dependencies = T)
+install.packages("car", dependencies = T)
+install.packages("Hmisc", dependencies = T)
+install.packages("lm.beta", dependencies = T)
+install.packages("ggplot2", dependencies = T)
+install.packages("dplyr", dependencies = T)
+
+
+library(haven)
+library(psych)
+library(car)
+library(Hmisc)
+library(lm.beta) 		
+library(dplyr)
+
+
+#matrica
+matrica <- read_spss(file.choose())
+colnames(matrica)
+
+matrica
+
+#MODEL 1
+#postovanje mera/pridrzavanje mera/ponasanje tokom pandemije
+matrica$post_mera=rowSums(cbind(matrica$soc.dist, matrica$hig))
+colnames(matrica)
+
+#1 korak /// HEXACO
+postovanje_mera_korak1 <- lm(post_mera ~ H + E + X + A + C + O, data = matrica)
+summary(postovanje_mera_korak1)
+
+#2 korak  /// DT
+postovanje_mera_korak2 <- lm(post_mera ~ H + E + X + A + C + O + M + P + N, data = matrica)
+summary(postovanje_mera_korak2)
+
+anova(postovanje_mera_korak1, postovanje_mera_korak2)
+
+lm.beta(postovanje_mera_korak1)
+lm.beta(postovanje_mera_korak2)
+
+
+#MODEL 2, procena korisnosti mera
+#1 korak /// hexaco
+procena_korisnosti_mera_korak1 <- lm( korisnost.mera ~ H + E + X + A + C + O, data = matrica)
+summary(procena_korisnosti_mera_korak1)
+
+#2 korak  /// dt
+procena_korisnosti_mera_korak2 <- lm(korisnost.mera ~ H + E + X + A + C + O + M + P + N, data = matrica)
+summary(procena_korisnosti_mera_korak2)
+
+anova(procena_korisnosti_mera_korak1, procena_korisnosti_mera_korak2)
+
+lm.beta(procena_korisnosti_mera_korak1)
+lm.beta(procena_korisnosti_mera_korak2)
+
+
+#MODEL 3, stavovi o merama + strah
+matrica$stav_strah=rowSums(cbind(matrica$postovanje.mera, matrica$emoc.rek, matrica$strah))
+colnames(matrica)
+
+#1 korak /// hexaco
+stav_o_merama_strah_korak1 <- lm(stav_strah ~ H + E + X + A + C + O, data = matrica)
+summary(stav_o_merama_strah_korak1)
+#2 korak  /// dt
+stav_o_merama_strah_korak2 <- lm(stav_strah ~ H + E + X + A + C + O + M + P + N, data = matrica)
+summary(stav_o_merama_strah_korak2)
+
+anova(stav_o_merama_strah_korak1, stav_o_merama_strah_korak2)
+
+lm.beta(stav_o_merama_strah_korak1)
+lm.beta(stav_o_merama_strah_korak2)
+
+
+#MODEL 4, procena rizika
+matrica$rizik=rowSums(cbind(matrica$rizik.zdravlje, matrica$rizik.glob))
+colnames(matrica)
+
+#1 korak /// hexaco
+procena_rizika_korak1 <- lm( rizik ~ H + E + X + A + C + O, data = matrica)
+summary(procena_rizika_korak1 )
+
+#2 korak  /// dt
+procena_rizika_korak2 <- lm(rizik ~ H + E + X + A + C + O + M + P + N, data = matrica)
+summary(procena_rizika_korak2)  
+
+anova(procena_rizika_korak1 , procena_rizika_korak2)
+
+lm.beta(procena_rizika_korak1)
+lm.beta(procena_rizika_korak2)
